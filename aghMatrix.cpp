@@ -13,12 +13,6 @@
 
 using namespace std;
 
-
-template class aghMatrix<int>;	/** Written in order to have templates of class' functions in .cpp file
-								*	More on: https://isocpp.org/wiki/faq/templates#separate-template-class-defn-from-decl
-								*/
-
-
 template <class T>
 void aghMatrix<T>::allocateMem(int m, int n)
 {
@@ -50,7 +44,7 @@ void aghMatrix<T>::deallocateMem()
 template <class T>
 aghMatrix<T>::aghMatrix()
 {
-	this->pointer = nullptr;	/// Setting pointer to nullptr because there is no matrix 
+	this->pointer = NULL;	/// Setting pointer to nullptr because there is no matrix
 	this->m = 0;	/// Setting number of rows in object's matrix to 0 because now we don't have any
 	this->n = 0;	/// Setting number of columns in object's matrix to 0 because now we don't have any
 }
@@ -114,7 +108,7 @@ void aghMatrix<T>::setItems(int m, int n, ...)
 	int m_min = 0;	///< Variable which tells us how many rows we can change -> Look at above description of function
 	int n_min = 0;	///< Variable which tells us how many columns we can change -> Look at above description of function
 	int numberOPE = m * n;	///< number Of Passed Elements
-	int flag = 0;	///< Auxiliary variable 
+	int flag = 0;	///< Auxiliary variable
 
 	if (m < this->m) m_min = m;	/// Setting value of m_min
 	else m_min = this->m;
@@ -143,3 +137,7 @@ void aghMatrix<T>::setItems(int m, int n, ...)
 
 	delete[] passedMatrix;	/// Deallocating memory
 }
+
+template class aghMatrix<int>;  /** Written in order to have templates of class' functions in .cpp file
+								*	More on: https://isocpp.org/wiki/faq/templates#separate-template-class-defn-from-decl
+								*/
