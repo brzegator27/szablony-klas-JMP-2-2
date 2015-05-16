@@ -17,12 +17,12 @@ int main()
 
 	for (int i = 0; i < 3; i++)
 	{
-		for (int j = 0; j < 3; j++)
+		for (int j = 0; j < 3; j++) //zmiana w 20 Piotr
 			cout << macierz.getItem(i, j) << "  ";
 
 		cout << "\n";
 	}
 
-	getchar();
+	getchar(); // modyfikacja Piotr
 	return 0;
 }
