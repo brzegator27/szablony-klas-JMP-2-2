@@ -6,6 +6,11 @@ int main()
 {
 	cout << "To jest jedynie test, zakomentowałem, by się skompilowało";
 
+	int a[] = { 1, 2, 3, 4 };
+
+	for (auto& x : a)
+		cout << x;
+
     getchar();
 
 	return 0;
