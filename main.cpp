@@ -23,6 +23,8 @@ int main()
 		cout << "\n";
 	}
 
+	//Jakis komentarz Kuby :P
+	
 	getchar();
 	return 0;
 }
