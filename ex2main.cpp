@@ -1,18 +1,24 @@
-#include <iostream>
-
-using namespace std;
+#include "aghInclude.h"
 
 int main()
 {
-	cout << "To jest jedynie test, zakomentowałem, by się skompilowało";
+	aghMatrix<int> macierz(3, 3);
 
-	int a[] = { 1, 2, 3, 4 };
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 3; j++)
+			macierz.setItem(i, j, (i + 1)*(j + 1));
 
-	for (auto& x : a)
-		cout << x;
+	macierz.setItem(1, 1, 99);
 
-    getchar();
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+			cout << macierz.getItem(i, j) << "  ";
 
+		cout << "\n";
+	}
+
+	getchar();
 	return 0;
 }
 
