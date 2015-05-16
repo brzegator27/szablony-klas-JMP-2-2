@@ -8,6 +8,7 @@
 // -------------------------------------------------------------------------
 
 #include "aghException.h"
+#include <stdarg.h>	/// Library essentinal for funtion with unknown number of parameters
 
 #ifndef AGH_MATRIX
 #define AGH_MATRIX
@@ -53,19 +54,18 @@ public:
 	/// \param newValue - new value which we are going to set for partic
 	void setItem(int m, int n, T newValue);
 
-	/// \brief function setting value of elements of matrix
+	/// \brief function setting values of each element of matrix; values are taken from one-row table
 	///
-	/// \param m - number of row
-	/// \param n - number of column
-	/// \param newValue - new value which we are going to set for partic
-	void setItems(T* newValue);
+	/// \param tab - pointer to one-row table with values which we are going to set for matrix's elements
+	void setItems(T* tab);
 
-	/// \brief function setting value of element of matrix
+	/// \brief function setting values of some elements of matrix; values are passed as arguments
 	///
-	/// \param m - number of row
-	/// \param n - number of column
-	/// \param newValue - new value which we are going to set for partic
-	void setItems(int m, int n, T newValue);
+	/// \param n_args - number of arguments
+	/// 1st m - numbers of rows in passing matrix
+	/// 2nd n - numbers of columns in passing matrix
+	/// 3rd and successive ... - elements of passing matrix
+	void setItems(int m, int n, ...);
 
 	/// \brief function getting value of element of matrix
 	///

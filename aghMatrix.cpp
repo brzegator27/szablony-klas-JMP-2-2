@@ -84,3 +84,62 @@ T aghMatrix<T>::getItem(int m, int n)
 
 	return this->pointer[m][n];	/// Returning value of particular element of matrix
 }
+
+template <class T>
+void aghMatrix<T>::setItems(T* tab)
+{
+	/// We assume passing table has as many elements as (m * n)
+
+	int flag = 0; ///< Point to current element in table; current means this, which we are going to write in near future
+
+	for (int i = 0; i < m; i++)
+		for (int j = 0; j < n; j++)
+		{
+			this->pointer[i][j] = tab[flag];	/// Assignment of passed values to object's matrix
+			flag++;		/// Guide us through passed table
+		}
+}
+
+template <class T>
+void aghMatrix<T>::setItems(int m, int n, ...)
+{
+	/** There are only set these elements which overlap
+	*	For example: when we try to set elements from matrix 2 x 2
+	*	by elements from matrix 4 x 1
+	*	There will be set only elements: 1:1, 2:1
+	*	Warning! We count starting from 1
+	*/
+
+	T* passedMatrix = new T[m*n];	///< Table for passed matrix's elements
+	int m_min = 0;	///< Variable which tells us how many rows we can change -> Look at above description of function
+	int n_min = 0;	///< Variable which tells us how many columns we can change -> Look at above description of function
+	int numberOPE = m * n;	///< number Of Passed Elements
+	int flag = 0;	///< Auxiliary variable 
+
+	if (m < this->m) m_min = m;	/// Setting value of m_min
+	else m_min = this->m;
+
+	if (n < this->n) n_min = n;	/// Setting value of n_min
+	else n_min = this->n;
+
+	va_list ap;	///< Iterator of arguments
+	va_start(ap, m);	/// Starts iterating arguments with a
+	va_arg(ap, T);	/// Skipping 2nd argument, which is n, and we don't need to take it once more
+
+	for (int i = 0; numberOPE > 0; numberOPE--)	/// Function read as many arguments as there were passed
+	{
+		passedMatrix[flag * n + (i % n)] = va_arg(ap, T);	/// Passed arguments are entered into table, which we treat as two-dimension table
+		if ((i + 1) % n == 0) flag++;	/// We increase flag so we can move to next, fake row
+		i++;	/// Incrementing i variable in order to know how many arguments we have already taken
+	}
+
+	va_end(ap); /// This frees va_list list
+
+	for (int i = 0; i < m_min; i++)
+		for (int j = 0; j < n_min; j++)
+		{
+		this->pointer[i][j] = passedMatrix[i * n + j];	/// We change values of elemets in object's matrix which overlap
+		}
+
+	delete[] passedMatrix;	/// Deallocating memory
+}
