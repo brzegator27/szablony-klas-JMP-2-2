@@ -9,9 +9,6 @@
 
 
 #include "aghMatrix.h"
-#include <iostream>
-
-using namespace std;
 
 template <class T>
 void aghMatrix<T>::allocateMem(int m, int n)
@@ -44,7 +41,7 @@ void aghMatrix<T>::deallocateMem()
 template <class T>
 aghMatrix<T>::aghMatrix()
 {
-	this->pointer = nullptr;	/// Setting pointer to nullptr because there is no matrix
+	this->pointer = NULL;	/// Setting pointer to nullptr because there is no matrix
 	this->m = 0;	/// Setting number of rows in object's matrix to 0 because now we don't have any
 	this->n = 0;	/// Setting number of columns in object's matrix to 0 because now we don't have any
 }
@@ -154,8 +151,8 @@ void aghMatrix<T>::setItems(int m, int n, ...)
     }
 
     template <class T>
-    aghMatrix<T>& aghMatrix<T>::operator+ (const aghMatrix<T>& matrix){
-        if((this->m != matrix.m) || (this->n != matrix.n)) throw aghException(0, "Matrix has different size", __FILE__, __LINE__);
+    aghMatrix<T>& aghMatrix<T>::operator+ (aghMatrix<T>& matrix){
+        if((this->m != matrix.m) || (this->n != matrix.n)) throw aghException(0, "Matrices have different size", __FILE__, __LINE__);
 
         for(int i=0; i<this->m; i++){
             for(int j=0; j<this->n; j++){
@@ -167,7 +164,7 @@ void aghMatrix<T>::setItems(int m, int n, ...)
 
     template <class T>
     aghMatrix<T>& aghMatrix<T>::operator* (aghMatrix<T>& matrix){
-        if((this->m != matrix.n)) throw aghException(0, "Matrix has wrong size", __FILE__, __LINE__);
+        if((this->m != matrix.n)) throw aghException(0, "Dimensions are not compatible", __FILE__, __LINE__);
 
         aghMatrix<T> temp(this->m, matrix.n);
         for(int i=0; i<temp.m; i++){
@@ -182,22 +179,22 @@ void aghMatrix<T>::setItems(int m, int n, ...)
     }
 
     template <class T>
-    bool aghMatrix<T>::operator==(aghMatrix<T>& ClassObj){
-        if((this->m != ClassObj.m) || (this->n != ClassObj.n)) return 0;
+    bool aghMatrix<T>::operator==(aghMatrix<T>& matrix){
+        if((this->m != matrix.m) || (this->n != matrix.n)) return 0;
         for(int i=0;i<this->m;i++){
             for(int j=0;j<this->n;j++){
-                if(this->pointer[i][j] != ClassObj.pointer[i][j]) return 0;
+                if(this->pointer[i][j] != matrix.pointer[i][j]) return 0;
             }
         }
         return 1;
     }
 
     template <class T>
-    bool aghMatrix<T>::operator!=(aghMatrix<T>& ClassObj){
-        if((this->m != ClassObj.m) || (this->n != ClassObj.n)) return 1;
+    bool aghMatrix<T>::operator!=(aghMatrix<T>& matrix){
+        if((this->m != matrix.m) || (this->n != matrix.n)) return 1;
         for(int i=0;i<this->m;i++){
             for(int j=0;j<this->n;j++){
-                if(this->pointer[i][j] != ClassObj.pointer[i][j]) return 1;
+                if(this->pointer[i][j] != matrix.pointer[i][j]) return 1;
             }
         }
         return 0;
@@ -209,6 +206,108 @@ void aghMatrix<T>::setItems(int m, int n, ...)
         return this->pointer[m][n];
     }
 
+    template <>
+    aghMatrix<char>& aghMatrix<char>::operator+ (aghMatrix<char>& matrix){
+        if((this->m != matrix.m) || (this->n != matrix.n)) throw aghException(0, "Matrices have different sizes", __FILE__, __LINE__);
+
+        for(int i=0; i<this->m; i++){
+            for(int j=0; j<this->n; j++){
+                this->pointer[i][j] = ((this->pointer[i][j] - 97) + (matrix.pointer[i][j] - 97));
+                this->pointer[i][j] = this->pointer[i][j] % 26 + 97;
+            }
+        }
+        return *this;
+    }
+
+    template <>
+    aghMatrix<char>& aghMatrix<char>::operator* (aghMatrix<char>& matrix){
+        if((this->n != matrix.m)) throw aghException(0, "Dimensions are not compatible", __FILE__, __LINE__);
+
+        aghMatrix<char> temp(this->m, matrix.n);
+        for(int i=0; i<temp.m; i++){
+            for(int j=0; j<matrix.n; j++){
+                for(int k=0; k<matrix.m; k++){
+                    temp.pointer[i][j] = temp.pointer[i][j] + (this->pointer[i][k]-97) * (matrix.pointer[k][j]-97);
+                }
+                temp.pointer[i][j] = temp.pointer[i][j] % 26 + 97;
+            }
+        }
+        *this = temp;
+        return *this;
+    }
+
+    template <>
+    aghMatrix<char*>& aghMatrix<char*>::operator+ (aghMatrix<char*>& matrix){
+        if((this->m != matrix.m) || (this->n != matrix.n)) throw aghException(0, "Matrices have different sizes", __FILE__, __LINE__);
+
+        char* bufor;
+        bufor = new char[26];
+        int x;
+        char c;
+
+        for(int i=0; i<this->m; i++){
+            for(int j=0; j<this->n; j++){
+                x=0; memset(bufor,0,25);
+                for(int k=0; k<26; k++){
+                    c = k+97;
+                    if((strchr(this->pointer[i][j], c) != NULL) || (strchr(matrix.pointer[i][j], c) != NULL)){
+                        bufor[x] = c;
+                        x++;
+                    }
+                }
+                this->pointer[i][j] = new char[strlen(bufor)+1];
+                strcpy(this->pointer[i][j],bufor);
+            }
+        }
+        delete [] bufor;
+        return *this;
+    }
+
+    template <>
+    aghMatrix<char*>& aghMatrix<char*>::operator* (aghMatrix<char*>& matrix){
+        if((this->n != matrix.m)) throw aghException(0, "Dimensions are not compatible", __FILE__, __LINE__);
+
+        char* product;
+        product = new char[26];
+
+        char* bufor;
+        bufor = new char[26];
+
+        int x,y;
+        char c;
+        aghMatrix<char*> temp(this->m, matrix.n);
+
+        for(int i=0; i<temp.m; i++){
+            for(int j=0; j<matrix.n; j++){
+                temp.pointer[i][j] = new char[26];
+                for(int k=0; k<matrix.m; k++){
+                    x=0; y=0; memset(product,0,25); memset(bufor,0,25);
+                    for(int l=0; l<26; l++){
+                        c = l+97;
+                        if((strchr(this->pointer[i][k], c) != NULL) && (strchr(matrix.pointer[k][j], c) != NULL)){
+                        product[x] = c;
+                        x++;
+                        }
+                    }
+                    for(int l=0; l<26; l++){
+                        c = l+97;
+                        if((strchr(temp.pointer[i][j], c) != NULL) || (strchr(product, c) != NULL)){
+                            bufor[y] = c;
+                            y++;
+                        }
+                    }
+                    strcpy(temp.pointer[i][j],bufor);
+                }
+            }
+        }
+        delete [] product;
+        delete [] bufor;
+        *this = temp;
+        return *this;
+    }
+
 template class aghMatrix<int>;  /** Written in order to have templates of class' functions in .cpp file
 								*	More on: https://isocpp.org/wiki/faq/templates#separate-template-class-defn-from-decl
 								*/
+template class aghMatrix<char>;
+template class aghMatrix<char*>;

@@ -8,7 +8,7 @@
 // -------------------------------------------------------------------------
 
 #include "aghException.h"
-#include <stdarg.h>	/// Library essentinal for funtion with unknown number of parameters
+#include <stdarg.h>	/// Library essential for funtion with unknown number of parameters
 
 #ifndef AGH_MATRIX
 #define AGH_MATRIX
@@ -73,12 +73,45 @@ public:
 	/// \param n - number of column
 	T getItem(int m, int n);
 
+
+	/// \brief overloaded operator "="
+	///
+	/// \param matrix - other matrix
     aghMatrix<T> &operator= (aghMatrix<T>& matrix);
-    aghMatrix<T> &operator+ (const aghMatrix<T>& matrix);
+
+    /// \brief overloaded operator "+"
+    ///
+    /// \param matrix - other matrix to add
+    aghMatrix<T> &operator+ (aghMatrix<T>& matrix);
+
+    /// \brief overloaded operator "*"
+    ///
+    /// \param matrix - other matrix to multiply
     aghMatrix<T> &operator* (aghMatrix<T>& matrix);
-    bool operator==(aghMatrix<T>& ClassObj);
-    bool operator!=(aghMatrix<T>& ClassObj);
+
+    /// \brief overloaded operator "=="
+    ///
+    /// \param matrix - other matrix to compare
+    /// \return
+    /// \li 0 - when not equal
+    /// \li 1 - when equal
+    bool operator== (aghMatrix<T>& matrix);
+
+    /// \brief overloaded operator "!="
+    ///
+    /// \param matrix - other matrix to compare
+    /// \return it returns:
+    /// \li 0 - when equal
+    /// \li 1 - when not equal
+    bool operator!= (aghMatrix<T>& matrix);
+
+    /// \brief overloaded operator "()"
+    ///
+    /// \param m - number of row;
+    /// \param n - number of column;
+    /// \return it returns value under chosen index
     T & operator()(int m, int n);
+
 };
 
 // -------------------------------------------------------------------------
