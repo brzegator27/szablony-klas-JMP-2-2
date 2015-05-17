@@ -44,7 +44,7 @@ void aghMatrix<T>::deallocateMem()
 template <class T>
 aghMatrix<T>::aghMatrix()
 {
-	this->pointer = NULL;	/// Setting pointer to nullptr because there is no matrix
+	this->pointer = nullptr;	/// Setting pointer to nullptr because there is no matrix
 	this->m = 0;	/// Setting number of rows in object's matrix to 0 because now we don't have any
 	this->n = 0;	/// Setting number of columns in object's matrix to 0 because now we don't have any
 }
@@ -137,6 +137,77 @@ void aghMatrix<T>::setItems(int m, int n, ...)
 
 	delete[] passedMatrix;	/// Deallocating memory
 }
+
+    template <class T>
+    aghMatrix<T>& aghMatrix<T>::operator= (aghMatrix<T>& matrix){
+        if(matrix == *this) return *this;
+
+        deallocateMem();	/// Deallocation of memory
+        allocateMem(matrix.m, matrix.n);	/// We allocate as much of new memory, as is in passed 'matrix'
+
+        for (int i=0; i<this->m; i++){
+            for (int j=0; j<this->n; j++){
+                this->pointer[i][j] = matrix.pointer[i][j];	/// Copying values from 'matrix' to our object
+            }
+        }
+        return *this;	/// Returning pointer to 'this' object
+    }
+
+    template <class T>
+    aghMatrix<T>& aghMatrix<T>::operator+ (const aghMatrix<T>& matrix){
+        if((this->m != matrix.m) || (this->n != matrix.n)) throw aghException(0, "Matrix has different size", __FILE__, __LINE__);
+
+        for(int i=0; i<this->m; i++){
+            for(int j=0; j<this->n; j++){
+                this->pointer[i][j] = this->pointer[i][j] + matrix.pointer[i][j];
+            }
+        }
+        return *this;
+    }
+
+    template <class T>
+    aghMatrix<T>& aghMatrix<T>::operator* (aghMatrix<T>& matrix){
+        if((this->m != matrix.n)) throw aghException(0, "Matrix has wrong size", __FILE__, __LINE__);
+
+        aghMatrix<T> temp(this->m, matrix.n);
+        for(int i=0; i<temp.m; i++){
+            for(int j=0; j<matrix.n; j++){
+                for(int k=0; k<matrix.m; k++){
+                    temp.pointer[i][j] = temp.pointer[i][j] + this->pointer[i][k] * matrix.pointer[k][j];
+                }
+            }
+        }
+        *this = temp;
+        return *this;
+    }
+
+    template <class T>
+    bool aghMatrix<T>::operator==(aghMatrix<T>& ClassObj){
+        if((this->m != ClassObj.m) || (this->n != ClassObj.n)) return 0;
+        for(int i=0;i<this->m;i++){
+            for(int j=0;j<this->n;j++){
+                if(this->pointer[i][j] != ClassObj.pointer[i][j]) return 0;
+            }
+        }
+        return 1;
+    }
+
+    template <class T>
+    bool aghMatrix<T>::operator!=(aghMatrix<T>& ClassObj){
+        if((this->m != ClassObj.m) || (this->n != ClassObj.n)) return 1;
+        for(int i=0;i<this->m;i++){
+            for(int j=0;j<this->n;j++){
+                if(this->pointer[i][j] != ClassObj.pointer[i][j]) return 1;
+            }
+        }
+        return 0;
+    }
+
+    template <class T>
+    T& aghMatrix<T>::operator()(int m, int n){
+        if((m > this->m) || (m < 0) || (n < 0) || (n > this->n)) throw aghException(0, "Index out of range", __FILE__, __LINE__);
+        return this->pointer[m][n];
+    }
 
 template class aghMatrix<int>;  /** Written in order to have templates of class' functions in .cpp file
 								*	More on: https://isocpp.org/wiki/faq/templates#separate-template-class-defn-from-decl

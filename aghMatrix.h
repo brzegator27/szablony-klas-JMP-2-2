@@ -72,6 +72,13 @@ public:
 	/// \param m - number of row
 	/// \param n - number of column
 	T getItem(int m, int n);
+
+    aghMatrix<T> &operator= (aghMatrix<T>& matrix);
+    aghMatrix<T> &operator+ (const aghMatrix<T>& matrix);
+    aghMatrix<T> &operator* (aghMatrix<T>& matrix);
+    bool operator==(aghMatrix<T>& ClassObj);
+    bool operator!=(aghMatrix<T>& ClassObj);
+    T & operator()(int m, int n);
 };
 
 // -------------------------------------------------------------------------
